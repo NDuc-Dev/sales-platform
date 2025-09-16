@@ -1,0 +1,5 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Material theme giữ nguyên, Tailwind bổ sung utility */

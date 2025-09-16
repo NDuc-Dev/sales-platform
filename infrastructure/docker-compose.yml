@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sp_postgres
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shop
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: sp_redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: sp_rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672" # UI http://localhost:15672 (guest/guest)
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: sp_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: sp_redis_commander
+    environment:
+      - REDIS_HOSTS=local:sp_redis:6379
+    ports:
+      - "8081:8081"
+
+volumes:
+  pgdata:
