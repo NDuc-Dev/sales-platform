@@ -1,0 +1,8 @@
+{
+  "$schema": "node_modules/ng-openapi-gen/ng-openapi-gen-schema.json",
+  "input": "http://localhost:7001/swagger/v1/swagger.json",
+  "output": "src/app/core/api-clients/identity",
+  "services": false,
+  "module": false,
+  "enumStyle": "pascal"
+}

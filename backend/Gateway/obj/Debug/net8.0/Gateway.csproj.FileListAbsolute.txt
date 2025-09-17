@@ -43,3 +43,4 @@ C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Gateway\obj\Debug\net8.0\refint
 C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Gateway\obj\Debug\net8.0\Gateway.pdb
 C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Gateway\obj\Debug\net8.0\Gateway.genruntimeconfig.cache
 C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Gateway\obj\Debug\net8.0\ref\Gateway.dll
+C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Gateway\obj\Debug\net8.0\Gateway.sourcelink.json
