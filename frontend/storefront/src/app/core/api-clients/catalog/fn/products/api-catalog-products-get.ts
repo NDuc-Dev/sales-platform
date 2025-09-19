@@ -10,28 +10,22 @@ import { RequestBuilder } from '../../request-builder';
 
 import { ProductListItemDto } from '../../models/product-list-item-dto';
 
-export interface ApiCatalogProductsGet$Params {}
+export interface ApiCatalogProductsGet$Params {
+}
 
-export function apiCatalogProductsGet(
-  http: HttpClient,
-  rootUrl: string,
-  params?: ApiCatalogProductsGet$Params,
-  context?: HttpContext
-): Observable<StrictHttpResponse<Array<ProductListItemDto>>> {
+export function apiCatalogProductsGet(http: HttpClient, rootUrl: string, params?: ApiCatalogProductsGet$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProductListItemDto>>> {
   const rb = new RequestBuilder(rootUrl, apiCatalogProductsGet.PATH, 'get');
   if (params) {
   }
 
-  return http
-    .request(
-      rb.build({ responseType: 'json', accept: 'application/json', context })
-    )
-    .pipe(
-      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<ProductListItemDto>>;
-      })
-    );
+  return http.request(
+    rb.build({ responseType: 'json', accept: 'application/json', context })
+  ).pipe(
+    filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
+    map((r: HttpResponse<any>) => {
+      return r as StrictHttpResponse<Array<ProductListItemDto>>;
+    })
+  );
 }
 
 apiCatalogProductsGet.PATH = '/api/catalog/products';

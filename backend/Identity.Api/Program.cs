@@ -58,40 +58,57 @@ app.MapPost("/api/auth/register", async (RegisterRequest req, UserManager<AppUse
     return Results.Ok(new { ok = true });
 }).WithTags("Auth");
 
-app.MapPost("/api/auth/login", async (LoginRequest req, UserManager<AppUser> userMgr, IConfiguration cfg) =>
+app.MapPost("/api/auth/login", async (LoginRequest req, UserManager<AppUser> userMgr, RoleManager<IdentityRole> roleMgr, IConfiguration cfg, DbContext db) =>
 {
     var user = await userMgr.FindByEmailAsync(req.Email);
-    if (user is null) return Results.Unauthorized();
-
-    var passOk = await userMgr.CheckPasswordAsync(user, req.Password);
-    if (!passOk) return Results.Unauthorized();
+    if (user is null || !await userMgr.CheckPasswordAsync(user, req.Password))
+        return Results.Unauthorized();
 
     var roles = await userMgr.GetRolesAsync(user);
     var role = roles.FirstOrDefault() ?? "User";
 
-    var j = cfg.GetSection("Jwt");
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(j["Key"]!));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var access = AuthHelpers.CreateJwt(user, role, cfg);
+    var refresh = AuthHelpers.CreateRefreshToken(user.Id);
 
-    var claims = new[]
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-        new Claim(ClaimTypes.Role, role),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+    db.RefreshTokens.Add(refresh);
+    await db.SaveChangesAsync();
 
-    var token = new JwtSecurityToken(
-        issuer: j["Issuer"],
-        audience: j["Audience"],
-        claims: claims,
-        expires: DateTime.UtcNow.AddHours(2),
-        signingCredentials: creds
-    );
+    return Results.Ok(new AuthResponse(access, refresh.Token, role, user.Email!));
+}).WithTags("Auth")
+  .Produces<AuthResponse>(StatusCodes.Status200OK)
+  .Produces(StatusCodes.Status401Unauthorized);
 
-    var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
-    return Results.Ok(new AuthResponse(tokenStr, role, user.Email!));
+app.MapPost("/api/auth/refresh", async (RefreshRequest req, UserManager<AppUser> userMgr, IConfiguration cfg, DbContext db) =>
+{
+    var rt = await db.RefreshTokens.FirstOrDefaultAsync(x => x.Token == req.RefreshToken);
+    if (rt is null || !rt.IsActive) return Results.Unauthorized();
+
+    // rotate: revoke current, create new
+    rt.RevokedAt = DateTime.UtcNow;
+    var newRt = AuthHelpers.CreateRefreshToken(rt.UserId);
+    rt.ReplacedByToken = newRt.Token;
+    db.RefreshTokens.Add(newRt);
+
+    var user = await userMgr.FindByIdAsync(rt.UserId);
+    if (user is null) return Results.Unauthorized();
+
+    var roles = await userMgr.GetRolesAsync(user);
+    var role = roles.FirstOrDefault() ?? "User";
+    var access = AuthHelpers.CreateJwt(user, role, cfg);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new AuthResponse(access, newRt.Token, role, user.Email!));
+}).WithTags("Auth")
+  .Produces<AuthResponse>(StatusCodes.Status200OK)
+  .Produces(StatusCodes.Status401Unauthorized);
+
+app.MapPost("/api/auth/logout", async (LogoutRequest req, DbContext db) =>
+{
+    var rt = await db.RefreshTokens.FirstOrDefaultAsync(x => x.Token == req.RefreshToken);
+    if (rt is not null && rt.IsActive) { rt.RevokedAt = DateTime.UtcNow; await db.SaveChangesAsync(); }
+    return Results.Ok(new { ok = true });
 }).WithTags("Auth");
+
 
 app.MapPost("/api/auth/seed-admin", async (UserManager<AppUser> userMgr, RoleManager<IdentityRole> roleMgr) =>
 {

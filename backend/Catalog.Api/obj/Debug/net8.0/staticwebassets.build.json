@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "lpWZXb9Nu9qxXJJgzYrFfReletFwDTzokfjz82E6yqU=",
+  "Hash": "P5AolxPfQCXFR9wWLip/qwj1J4m4ptg+i40muI8QmRQ=",
   "Source": "Catalog.Api",
   "BasePath": "_content/Catalog.Api",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "Catalog.Api\\wwwroot",
+      "Source": "Catalog.Api",
+      "ContentRoot": "C:\\Users\\NDuc\\Desktop\\Dev\\sales-platform\\backend\\Catalog.Api\\wwwroot\\",
+      "BasePath": "_content/Catalog.Api",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

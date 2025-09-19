@@ -127,3 +127,4 @@ C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Catalog.Api\bin\Debug\net8.0\ru
 C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Catalog.Api\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Catalog.Api\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Catalog.Api\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\NDuc\Desktop\Dev\sales-platform\backend\Catalog.Api\bin\Debug\net8.0\Catalog.Api.staticwebassets.runtime.json
